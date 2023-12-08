@@ -71,3 +71,11 @@ To test the project run:
  ```bash
  pytest
  ```
+
+ ## Screenshots:
+ The Index page:
+
+ <img src="screenshots/index.png"/>
+
+ The Map Page:
+  <img src="screenshots/map.png"/>
