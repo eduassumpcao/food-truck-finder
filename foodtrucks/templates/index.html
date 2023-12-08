@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SF - Food Truck Finder</title>
+    <link rel="icon" type="image/x-icon" href='{% load static %}{% static "pin.png" %}'>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            color: #2C3E50;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            border-radius: 10px;
+            padding: 4rem;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 10px 10px 5px #FFCC70;
+        }
+
+        .title {
+            font-size: large;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #form {
+            display: flex;
+            flex-direction: column;
+            margin-top: 2rem;
+        }
+
+        label, input {
+            margin-bottom: 1rem;
+        }
+
+        input {
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input:focus {
+            box-shadow: none;
+            border: 1px solid #ee0979;
+            outline-width: 0;
+        }
+
+        button {
+            padding: 15px;
+            background-color: #FFCC70;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: rgb(250, 184, 61)
+        }
+
+        #logo {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="title">
+            <h2>SF - Food Truck Finder</h2>
+            <h3>Find the 5 food trucks nearest you!</h3>
+        </div>
+        <img id="logo" src="static/food-truck.png" alt="Logo">
+        
+        <div>
+            <form id="form" onsubmit="submitForm(event)">
+                <input type="text" id="latitude" name="latitude" placeholder="Enter your latitude" required>
+                <input type="text" id="longitude" name="longitude" placeholder="Enter your longitude" required>
+        
+                <button type="submit">Get Coordinates</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function submitForm(event) {
+            event.preventDefault();
+
+            var latitude = document.getElementById('latitude').value;
+            var longitude = document.getElementById('longitude').value;
+
+            // Validate latitude and longitude
+            if (!isValidLatitude(latitude) || !isValidLongitude(longitude)) {
+                alert('Invalid latitude or longitude. Please enter valid values.');
+                return;
+            }
+
+            // Construct the redirect URL dynamically
+            var redirectUrl = '{% url "food_truck_map" %}?latitude=' + encodeURIComponent(latitude) + '&longitude=' + encodeURIComponent(longitude);
+            window.location.href = redirectUrl;
+        }
+
+        function isValidLatitude(latitude) {
+            var lat = parseFloat(latitude);
+            return !isNaN(lat) && lat >= -90 && lat <= 90;
+        }
+
+        function isValidLongitude(longitude) {
+            var lon = parseFloat(longitude);
+            return !isNaN(lon) && lon >= -180 && lon <= 180;
+        }
+    </script>
+</body>
+</html>

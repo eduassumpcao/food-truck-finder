@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #map {
+            height: calc(100vh - 40px); /* Adjusted height for the back button */
+        }
+
+        .back-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            margin-bottom: 10px;
+            background-color: #C850C0;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 400;
+        }
+
+        .back-button:hover {
+            background-color: #dd2ad1;
+        }
+    </style>
+    <link rel="icon" type="image/x-icon" href='{% load static %}{% static "pin.png" %}'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SF - Food Truck Finder</title>
+    
+    <!-- Include Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    
+    <!-- Include Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+    <div id="map" style="height: 100vh;"></div>
+    <button class="back-button" onclick="goBack()">Go Back</button>
+
+    
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        // Get data from Django view using template syntax
+        const customerCoordinates = {{ customer_coordinates|safe }};
+        const foodTrucks = {{ food_trucks|safe }};
+
+        // Initialize the map
+        const map = L.map('map').setView(customerCoordinates, 14);
+
+        // Add a tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Define custom icons
+        var customIcon = L.Icon.extend({options: {
+            iconSize: [35, 40],
+        }});
+
+        var foodTruckIcon = new customIcon({iconUrl: '{% load static %}{% static "food-truck-marker.png" %}',})
+        var pinIcon = new customIcon({iconUrl: '{% load static %}{% static "pin.png" %}',})
+        
+        L.marker(customerCoordinates, {icon: pinIcon}).addTo(map )
+            .bindPopup('Your Location')
+            .openPopup();
+
+        // Add markers for each food truck with the custom icon
+        foodTrucks.forEach(truck => {
+            const marker = L.marker(truck.coordinates, { icon: foodTruckIcon }).addTo(map);
+            marker.bindPopup(`<strong>${truck.name}</strong><br>Address: ${truck.address}<br>Coordinates: ${truck.coordinates.join(', ')}`);
+        });
+    </script>
+</body>
+</html>
